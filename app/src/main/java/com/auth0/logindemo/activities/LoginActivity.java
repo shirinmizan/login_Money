@@ -26,47 +26,65 @@ import com.auth0.android.result.Credentials;
 import com.auth0.android.result.UserProfile;
 import com.auth0.logindemo.utils.CredentialsManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.auth0.logindemo.utils.CredentialsManager.saveCredentials;
+
 public class LoginActivity extends Activity {
 
     private Lock mLock;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("login","mainfirst");
         Auth0 auth0 = new Auth0(getString(R.string.auth0_client_id), getString(R.string.auth0_domain));
+        //Request a refresh token along with the id token.
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("scope", "openid offline_access");
+
         mLock = Lock.newBuilder(auth0, mCallback)
                 //Add parameters to the build
                 .build(this);
-        startActivity(mLock.newIntent(this));
-
+        if (CredentialsManager.getCredentials(this).getIdToken() == null) {
+            Log.d("login","cred man null");
+            startActivity(mLock.newIntent(this));
+            return;
+        }
+        Log.d("login","beforeaclient");
         AuthenticationAPIClient aClient = new AuthenticationAPIClient(auth0);
-        aClient.tokenInfo(CredentialsManager.getCredentials(this).getIdToken())
-                .start(new BaseCallback<UserProfile, AuthenticationException>() {
-                    @Override
-                    public void onSuccess(final UserProfile payload) {
-                        LoginActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(LoginActivity.this, "Automatic Login Success", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        Log.d("c", payload.getId());
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("TOKEN", payload.getId());
-                        startActivity(intent);
-                        finish();
-                    }
+        Log.d("login","afteraclient");
+        aClient.tokenInfo(CredentialsManager.getCredentials(this).getIdToken()).start(new BaseCallback<UserProfile, AuthenticationException>() {
 
-                    @Override
-                    public void onFailure(AuthenticationException error) {
-                        LoginActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(LoginActivity.this, "Session Expired, please Log In", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        CredentialsManager.deleteCredentials(getApplicationContext());
-                        startActivity(mLock.newIntent(LoginActivity.this));
+
+            @Override
+            public void onSuccess(final UserProfile payload) {
+                Log.d("loginSuccess","afteraclient");
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Automatic Login Success", Toast.LENGTH_SHORT).show();
                     }
                 });
+                Log.d("c", payload.getId());
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("TOKEN", payload.getId());
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(AuthenticationException error) {
+                Log.d("loginFail","afteraclient");
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Session Expired, please Log In", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                CredentialsManager.deleteCredentials(getApplicationContext());
+                startActivity(mLock.newIntent(LoginActivity.this));
+            }
+        });
+
     }
 
     @Override
@@ -81,8 +99,12 @@ public class LoginActivity extends Activity {
         @Override
         public void onAuthentication(Credentials credentials) {
             Toast.makeText(LoginActivity.this, "Log In - Success", Toast.LENGTH_SHORT).show();
-            App.getInstance().setUserCredentials(credentials);
+            App newapp = new App();
+            Log.d("OnAuthfuck",String.valueOf(credentials));
+            saveCredentials(LoginActivity.this,credentials);
+            //  newapp.getInstance().setUserCredentials(credentials);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Log.d("OnAuthfuck","Bout2FinishCB");
             finish();
         }
 
@@ -96,6 +118,7 @@ public class LoginActivity extends Activity {
             Toast.makeText(LoginActivity.this, "Log In - Error Occurred", Toast.LENGTH_SHORT).show();
         }
     };
+
 
 }
 
