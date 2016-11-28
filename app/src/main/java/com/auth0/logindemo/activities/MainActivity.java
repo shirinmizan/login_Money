@@ -59,19 +59,27 @@ public class MainActivity extends AppCompatActivity {
     String category = null;
     ArrayList<HashMap<String, String>> arraylist;
 
+    public String thefuckingtoken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("main","mainfirst");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuthenticationClient = new AuthenticationAPIClient(new Auth0(getString(R.string.auth0_client_id), getString(R.string.auth0_domain)));
         //get the credentials from applocation App singleton
-        mAuthenticationClient.tokenInfo(App.getInstance().getUserCredentials().getIdToken())
+       /* mAuthenticationClient.tokenInfo(App.getInstance().getUserCredentials().getIdToken())
                 .start(new BaseCallback<UserProfile, AuthenticationException>() {
 
                     @Override
                     public void onFailure(AuthenticationException error) {
 
                     }
+                    WHY DID YOU TRY TO DO THIS OVER AGAIN? THIS IS DONE ON THE LOGIN ACTIVITY THATS HOW YOU GOT HERE
+
+                  // ok I understand now? How about u get rid of what needs to get rid of
+                  // I really cannot research now. I don't wanna learn now. If u fix
+                  this I will understand what happend
 
                     @Override
                     public void onSuccess(final UserProfile payload) {
@@ -82,9 +90,13 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+                */
+
         Intent intent = getIntent();
         intent.getStringExtra("TOKEN");
         //Log.d("TOKEN");
+        thefuckingtoken = intent.getStringExtra("TOKEN");
+        Log.d("THEGODDAMNTOKEN",thefuckingtoken);
 
         mEditProfileButton = (Button) findViewById(R.id.editButton);
         mCancelEditionButton = (Button) findViewById(R.id.cancelEditionButton);
@@ -94,16 +106,16 @@ public class MainActivity extends AppCompatActivity {
         mUpdateCountryEditext = (EditText) findViewById(R.id.updateCountryEdittext);
 
         /**mEditProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editProfile();
-            }
+        @Override
+        public void onClick(View v) {
+        editProfile();
+        }
         });
-        mCancelEditionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editModeOn(false);
-            }
+         mCancelEditionButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+        editModeOn(false);
+        }
         });**/
 
         /**Button refreshTokenButton = (Button) findViewById(refreshTokenButton);
@@ -122,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         // }
         //  });
         // logoutButton.setOnClickListener(new View.OnClickListener() {
-       // @Override
+        // @Override
         // public void onClick(View v) {
         //  logout();
         //  }
@@ -135,15 +147,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("inback","inback");
                 URL url = new URL(FETCH_URL);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestProperty("Authorization", "Bearer" + mUserProfile.getId());
+
                 urlConnection.setRequestMethod("POST");
                 urlConnection.connect();
 
                 int responsecode = urlConnection.getResponseCode();
 
+                Log.d("inbackRESPCode",String.valueOf(responsecode));
                 if (responsecode == HttpURLConnection.HTTP_OK) {
+
+                    Log.d("inback","ok code");
                     BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder sb = new StringBuilder();
                     String line;
@@ -166,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            Log.d("post","post");
+            Log.d("postS",String.valueOf(s));
             double sum1 = 0.0;
             double sum2 = 0.0;
             double amt = 0.0;
@@ -178,7 +196,10 @@ public class MainActivity extends AppCompatActivity {
                 //initialize a JSONArray of Strings
                 JSONArray jsonArray = null;
                 try {
+
+                    Log.d("postbeforejsonArray",String.valueOf(s));
                     jsonArray = new JSONArray(s);
+                    Log.d("afterJsonsArray",String.valueOf(s));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
