@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">01-Auth0LoginDemo</string>
+    <string name="welcome_message">Welcome To Your App</string>
+
+    <string name="auth0_client_id">epRgjVF15vGKLJEL8EjVGV241IImwDW2</string>
+    <string name="auth0_domain">moneymoney.auth0.com</string>
+
+    <string name="auth0_preferences">AUTH0_SHARED_PREFERENCES_KEY</string>
+    <string name="refresh">Get New ID With a RefreshTokenID</string>
+    <string name="token">Get New ID With a TokenID</string>
+    <string name="logout">Logout</string>
+
+    <string name="username">Name: %1$s</string>
+    <string name="useremail">Email: %1$s</string>
+    <string name="userCountry">Country: %1$s</string>
+    <string name="edit_hint">Add the country…</string>
+    <string name="edit">Edit Profile</string>
+    <string name="save">Save Changes</string>
+    <string name="cancel">Cancel Changes</string>
+</resources>
